@@ -47,6 +47,8 @@ public class CustomerService {
             customer.setAddress(updatedCustomer.getAddress());
             customer.setPhone(updatedCustomer.getPhone());
             customer.setCountry(updatedCustomer.getCountry());
+            String demonym = countryService.getDemonymByCountryCode(customer.getCountry());
+            customer.setDemonym(demonym);
             // Persist the changes
             customerRepository.persist(customer);
             return customer;
