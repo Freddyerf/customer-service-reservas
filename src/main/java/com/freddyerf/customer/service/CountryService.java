@@ -19,6 +19,16 @@ public class CountryService {
     private static final String API_FIELDS = "demonyms"; // Replace with your API key
 
 
+
+    /**
+     * Fetches the demonym for a given country code using the REST Countries API.
+     * This method constructs an HTTP request to query the API for the demonym information,
+     * specifically targeting the English male demonym.
+     *
+     * @param countryCode The ISO 3166-1 2-letter country code.
+     * @return The English male demonym for the country, or null if not found or in case of an error.
+     * @throws RuntimeException if the URI syntax is incorrect.
+     */
     public String getDemonymByCountryCode(String countryCode) {
         try {
             String url = API_URL + countryCode + "?fields=" + API_FIELDS;

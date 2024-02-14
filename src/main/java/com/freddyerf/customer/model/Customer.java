@@ -1,6 +1,8 @@
 package com.freddyerf.customer.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
@@ -22,6 +24,7 @@ public class Customer {
     private String secondLastName; // Optional
 
     @NotBlank
+    @Email
     @Column(nullable = false)
     private String email;
 
@@ -36,8 +39,7 @@ public class Customer {
     @NotBlank
     @Column(nullable = false)
     private String country; // ISO 3166 code
-
-    @NotBlank
+    
     @Column(nullable = true) // Allow demonym to be null if unavailable
     private String demonym;
 
