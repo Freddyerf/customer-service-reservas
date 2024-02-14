@@ -17,6 +17,13 @@ public class CustomerService {
     @Inject
     private CountryService countryService;
 
+
+    /**
+     * Creates and persists a new customer with a demonym based on their country code.
+     *
+     * @param customer The customer to be created.
+     * @return The persisted customer with the demonym set.
+     */
     @Transactional
     public Customer createCustomer(Customer customer) {
         String demonym = countryService.getDemonymByCountryCode(customer.getCountry());
@@ -26,18 +33,42 @@ public class CustomerService {
         return customer;
     }
 
+    /**
+     * Retrieves all customers from the database.
+     *
+     * @return A list of all customers.
+     */
     public List<Customer> getAllCustomers() {
         return customerRepository.listAll();
     }
 
+    /**
+     * Fetches customers by their country code.
+     *
+     * @param country The country code of the customers to retrieve.
+     * @return A list of customers from the specified country.
+     */
     public List<Customer> getCustomersByCountry(String country) {
         return customerRepository.findByCountry(country);
     }
 
+    /**
+     * Gets a customer by their unique ID.
+     *
+     * @param id The ID of the customer to find.
+     * @return The found customer, or null if not found.
+     */
     public Customer getCustomerById(Long id) {
         return customerRepository.findById(id);
     }
 
+    /**
+     * Updates an existing customer's details.
+     *
+     * @param id The ID of the customer to update.
+     * @param updatedCustomer The new details for the customer.
+     * @return The updated customer, or null if the customer does not exist.
+     */
     @Transactional
     public Customer updateCustomer(Long id, Customer updatedCustomer) {
         Customer customer = customerRepository.findById(id);
@@ -56,6 +87,12 @@ public class CustomerService {
         return null; // or throw an exception
     }
 
+    /**
+     * Deletes a customer by their ID.
+     *
+     * @param id The ID of the customer to delete.
+     * @return true if the customer was successfully deleted, false otherwise.
+     */
     @Transactional
     public boolean deleteCustomer(Long id) {
         return customerRepository.deleteById(id);
