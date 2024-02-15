@@ -10,6 +10,7 @@ services:
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://db:5432/customerdb
       QUARKUS_DATASOURCE_USERNAME: myuser
       QUARKUS_DATASOURCE_PASSWORD: mypass
+      QUARKUS_HTTP_PORT: 8080
     depends_on:
       - db
   db:
