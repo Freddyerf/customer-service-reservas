@@ -39,8 +39,8 @@ public class Customer {
     @NotBlank
     @Column(nullable = false)
     private String country; // ISO 3166 code
-    
-    @Column(nullable = true) // Allow demonym to be null if unavailable
+
+    @Column(nullable = false)
     private String demonym;
 
     // Getter and setter methods for all fields

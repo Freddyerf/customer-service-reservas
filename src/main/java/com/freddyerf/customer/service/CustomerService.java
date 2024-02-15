@@ -5,8 +5,12 @@ import com.freddyerf.customer.repository.CustomerRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 
 import java.util.List;
+import java.util.Set;
 
 @ApplicationScoped
 public class CustomerService {
@@ -16,6 +20,10 @@ public class CustomerService {
 
     @Inject
     private CountryService countryService;
+
+    @Inject
+    Validator validator;
+
 
 
     /**
@@ -28,6 +36,11 @@ public class CustomerService {
     public Customer createCustomer(Customer customer) {
         String demonym = countryService.getDemonymByCountryCode(customer.getCountry());
         customer.setDemonym(demonym);
+
+        Set<ConstraintViolation<Customer>> violations = validator.validate(customer);
+        if (!violations.isEmpty() || demonym == null) {
+            throw new ConstraintViolationException(violations);
+        }
 
         customerRepository.persist(customer);
         return customer;
@@ -71,6 +84,7 @@ public class CustomerService {
      */
     @Transactional
     public Customer updateCustomer(Long id, Customer updatedCustomer) {
+
         Customer customer = customerRepository.findById(id);
         if (customer != null) {
             // Update the fields you allow to be updated
@@ -80,6 +94,12 @@ public class CustomerService {
             customer.setCountry(updatedCustomer.getCountry());
             String demonym = countryService.getDemonymByCountryCode(customer.getCountry());
             customer.setDemonym(demonym);
+
+            // validate updated customer
+            Set<ConstraintViolation<Customer>> violations = validator.validate(customer);
+            if (!violations.isEmpty()) {
+                throw new ConstraintViolationException(violations);
+            }
             // Persist the changes
             customerRepository.persist(customer);
             return customer;

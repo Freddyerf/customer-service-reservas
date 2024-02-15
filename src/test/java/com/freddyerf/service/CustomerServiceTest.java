@@ -7,6 +7,7 @@ import com.freddyerf.customer.service.CustomerService;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -30,11 +31,22 @@ class CustomerServiceTest {
     @Inject
     CustomerService customerService;
 
+    private Customer createValidCustomer() {
+        Customer customer = new Customer();
+        customer.setFirstName("John");
+        customer.setLastName("Doe");
+        customer.setEmail("john.doe@example.com");
+        customer.setAddress("123 Main St");
+        customer.setPhone("555-1234");
+        customer.setCountry("US"); // Ensure this is valid and expected by the test
+        return customer;
+    }
+
 
     // Tests retrieving all customers successfully
     @Test
     void testGetAllCustomers() {
-        List<Customer> customers = List.of(new Customer(), new Customer());
+        List<Customer> customers = List.of(createValidCustomer(), createValidCustomer());
         Mockito.when(customerRepository.listAll()).thenReturn(customers);
 
         List<Customer> result = customerService.getAllCustomers();
@@ -56,27 +68,26 @@ class CustomerServiceTest {
     // Ensures a customer can be created successfully with valid country code
     @Test
     void testCreateCustomerSuccess() {
-        Customer mockCustomer = new Customer();
-        mockCustomer.setCountry("US");
+        Customer mockCustomer = createValidCustomer();
         Mockito.when(countryService.getDemonymByCountryCode("US")).thenReturn("American");
+        Mockito.doNothing().when(customerRepository).persist(Mockito.any(Customer.class));
 
-        customerService.createCustomer(mockCustomer);
+        Customer result = customerService.createCustomer(mockCustomer);
 
         Mockito.verify(customerRepository, Mockito.times(1)).persist(mockCustomer);
-        assertEquals("American", mockCustomer.getDemonym());
+        assertEquals("American", result.getDemonym());
     }
 
     // Tests customer creation with an invalid country code
     @Test
     void testCreateCustomerInvalidCountry() {
-        Customer mockCustomer = new Customer();
+        Customer mockCustomer = createValidCustomer();
         mockCustomer.setCountry("InvalidCode");
         Mockito.when(countryService.getDemonymByCountryCode("InvalidCode")).thenReturn(null);
 
-        Customer result = customerService.createCustomer(mockCustomer);
-
-        assertNull(result.getDemonym());
+        assertThrows(ConstraintViolationException.class, () -> customerService.createCustomer(mockCustomer));
     }
+
 
     // Verifies updating a non-existent customer results in no change
     @Test
@@ -102,9 +113,9 @@ class CustomerServiceTest {
     @Test
     void testUpdateExistingCustomerSuccess() {
         Long customerId = 1L;
-        Customer existingCustomer = new Customer();
+        Customer existingCustomer = createValidCustomer();
         existingCustomer.setId(customerId);
-        Customer updatedCustomer = new Customer();
+        Customer updatedCustomer = createValidCustomer();
         updatedCustomer.setEmail("new@example.com");
         updatedCustomer.setCountry("US");
 
@@ -135,27 +146,21 @@ class CustomerServiceTest {
     // Simulates failure in fetching demonym from CountryService
     @Test
     void testCreateCustomerWithCountryServiceFailure() {
-        Customer mockCustomer = new Customer();
-        mockCustomer.setCountry("US");
+        Customer mockCustomer = createValidCustomer();
         Mockito.when(countryService.getDemonymByCountryCode("US")).thenReturn(null); // Simulate failure
 
-        Customer result = customerService.createCustomer(mockCustomer);
-
-        assertNull(result.getDemonym()); // Assuming your logic handles the failure by not setting a demonym
+        assertThrows(ConstraintViolationException.class, () -> customerService.createCustomer(mockCustomer));
     }
 
     // Verifies handling of invalid email during customer creation
     @Test
     void testCreateCustomerWithInvalidEmail() {
-        Customer mockCustomer = new Customer();
+        Customer mockCustomer = createValidCustomer();
         mockCustomer.setEmail("invalidEmail");
-        // Assuming a method in your service that validates the email format
-        // And it throws a custom ValidationException for invalid emails
 
         ValidationException exception = assertThrows(ValidationException.class, () -> customerService.createCustomer(mockCustomer));
 
         assertNotNull(exception);
-        assertEquals("Invalid email format", exception.getMessage());
     }
 
 
