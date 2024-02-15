@@ -11,7 +11,7 @@ COPY src src/
 RUN chmod +x ./mvnw
 
 # Build the project without running tests
-RUN ./mvnw clean package -DskipTests -Dquarkus.package.type=uber-jar && ls /app/target
+RUN ./mvnw clean package -DskipTests -Dquarkus.package.type=uber-jar
 
 # Stage 2: Create the runtime image with Eclipse Temurin JRE
 FROM eclipse-temurin:21-jre
