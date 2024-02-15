@@ -56,3 +56,14 @@ Optionally, if you want to remove the volume containing the database data for a 
 ```bash 
 docker-compose down -v
 ```
+
+## API Documentation
+
+Explore the API documentation and try out the endpoints using Swagger UI: 
+
+1. Start the application with `docker-compose up`.
+2. Open a web browser and navigate to [http://localhost:8080/q/swagger-ui](http://localhost:8080/q/swagger-ui).
+
+This page provides interactive documentation, allowing you to try out the API endpoints directly.
+
+**Note:** Adjust the URL based on your application's host and port.
