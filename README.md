@@ -19,8 +19,8 @@ First, clone this repository to your local machine:
 
 You can run your application in dev mode that enables live coding using:
 ```bash
-git clone <repository-url>
-cd <repository-directory>
+git clone https://github.com/Freddyerf/customer-service-reservas.git
+cd customer-service
 ```
 ### 2. Build and Run with Docker Compose
 
